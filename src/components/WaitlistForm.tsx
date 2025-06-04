@@ -18,9 +18,10 @@ export default function WaitlistForm() {
         throw error
       } 
       setStatus('success')
-      setMessage('You\'re in! 🎉 We\'ll notify you when early access is ready.')
+      setMessage('You&apos;re in! 🎉 We&apos;ll notify you when early access is ready.')
       setEmail('')
-    } catch (error) {
+    } catch (err) {
+      console.error(err)
       setStatus('error')
       setMessage('Something went wrong. Please try again.')
     }

@@ -11,7 +11,7 @@ export async function getUserById(id: string) {
   return { data, error };
 }
 
-export async function updateUser(id: string, userData: any) {
+export async function updateUser(id: string, userData: Record<string, unknown>) {
   const { data, error } = await supabase
     .from('users')
     .update(userData)
@@ -32,7 +32,7 @@ export async function getProfileByUserId(userId: string) {
   return { data, error };
 }
 
-export async function createProfile(profileData: any) {
+export async function createProfile(profileData: Record<string, unknown>) {
   const { data, error } = await supabase
     .from('profiles')
     .insert(profileData)
@@ -41,7 +41,7 @@ export async function createProfile(profileData: any) {
   return { data, error };
 }
 
-export async function updateProfile(userId: string, profileData: any) {
+export async function updateProfile(userId: string, profileData: Record<string, unknown>) {
   const { data, error } = await supabase
     .from('profiles')
     .update(profileData)
@@ -52,7 +52,11 @@ export async function updateProfile(userId: string, profileData: any) {
 }
 
 // Generic database operations
-export async function fetchData(table: string, query: any = {}) {
+export async function fetchData(table: string, query: { 
+  filters?: Record<string, unknown>;
+  limit?: number;
+  offset?: number;
+} = {}) {
   let queryBuilder = supabase.from(table).select('*');
   
   // Apply filters if provided
@@ -75,7 +79,7 @@ export async function fetchData(table: string, query: any = {}) {
   return { data, error };
 }
 
-export async function insertData(table: string, data: any) {
+export async function insertData(table: string, data: Record<string, unknown>) {
   const { data: result, error } = await supabase
     .from(table)
     .insert(data)
@@ -84,7 +88,7 @@ export async function insertData(table: string, data: any) {
   return { data: result, error };
 }
 
-export async function updateData(table: string, id: string, data: any) {
+export async function updateData(table: string, id: string, data: Record<string, unknown>) {
   const { data: result, error } = await supabase
     .from(table)
     .update(data)
@@ -95,10 +99,15 @@ export async function updateData(table: string, id: string, data: any) {
 }
 
 export async function deleteData(table: string, id: string) {
-  const { error } = await supabase
-    .from(table)
-    .delete()
-    .eq('id', id);
-  
-  return { error };
+  try {
+    const { error } = await supabase
+      .from(table)
+      .delete()
+      .eq('id', id);
+    
+    return { error };
+  } catch (err) {
+    console.error(err);
+    return { error: 'Something went wrong. Please try again.' };
+  }
 }
